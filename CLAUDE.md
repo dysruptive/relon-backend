@@ -31,7 +31,7 @@ When working with third-party services, prefer their MCP plugin over writing raw
 1. **Explore** (subagent) → understand what exists
 2. **Plan** (subagent or inline for small tasks) → design the approach
 3. **Implement** (agent) → write the code
-4. **Verify** — always run `tsc --noEmit` on both sides after implementation
+4. **Verify** — always run `npm run typecheck` on both sides after implementation
 
 ---
 
@@ -44,11 +44,11 @@ npm run prisma:generate    # regenerate Prisma client after schema changes
 npm run prisma:deploy      # apply pending migrations (production/CI)
 npm run prisma:migrate     # create + apply migration (dev only, needs TTY)
 npm run prisma:seed        # seed demo data
-./node_modules/.bin/tsc --noEmit        # must pass before committing
+npm run typecheck          # must pass before committing
 
 # Frontend (run from frontend/)
 cd frontend && npm install
-./node_modules/.bin/tsc --noEmit        # must pass before committing
+npm run typecheck          # must pass before committing
 ```
 
 Always verify **zero TypeScript errors** on both sides after any change.

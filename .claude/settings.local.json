@@ -4,7 +4,11 @@
       "Bash(./node_modules/.bin/tsc --noEmit 2>&1)",
       "Bash(grep:*)",
       "Read(//Users/joel/Documents/relon-frontend/**)",
-      "Bash(./node_modules/.bin/tsc --noEmit)"
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(python3 -m json.tool)",
+      "Bash(npm run:*)",
+      "Bash(npx ts-node:*)",
+      "mcp__Jam__getNetworkRequests"
     ]
   }
 }
