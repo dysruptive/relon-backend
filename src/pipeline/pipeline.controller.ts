@@ -27,8 +27,8 @@ export class PipelineController {
 
   @Post('stages/initialize-defaults')
   @Permissions('pipeline:manage')
-  initializeDefaults(@CurrentUser() user: any) {
-    return this.pipelineService.initializeDefaults(user.organizationId);
+  initializeDefaults(@CurrentUser() user: any, @Query('type') type?: string) {
+    return this.pipelineService.initializeDefaults(user.organizationId, type);
   }
 
   @Post('stages')

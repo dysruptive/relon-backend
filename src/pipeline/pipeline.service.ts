@@ -95,35 +95,43 @@ export class PipelineService {
     return this.prisma.pipelineStage.delete({ where: { id } });
   }
 
-  async initializeDefaults(organizationId: string): Promise<{ created: number }> {
-    const existing = await this.prisma.pipelineStage.count({ where: { organizationId } });
-    if (existing > 0) {
-      return { created: 0 };
+  async initializeDefaults(organizationId: string, pipelineType?: string): Promise<{ created: number }> {
+    const DEFAULTS: Record<string, { name: string; color: string; lightColor: string; border: string; probability: number; sortOrder: number; isSystem: boolean }[]> = {
+      prospective_project: [
+        { name: 'New',         color: 'bg-slate-500',  lightColor: 'bg-slate-50',  border: 'border-slate-200',  probability: 10,  sortOrder: 0, isSystem: false },
+        { name: 'Contacted',   color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 25,  sortOrder: 1, isSystem: false },
+        { name: 'Quoted',      color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 50,  sortOrder: 2, isSystem: false },
+        { name: 'Negotiation', color: 'bg-orange-500', lightColor: 'bg-orange-50', border: 'border-orange-200', probability: 75,  sortOrder: 3, isSystem: false },
+        { name: 'Won',         color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 100, sortOrder: 4, isSystem: true  },
+        { name: 'Lost',        color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   sortOrder: 5, isSystem: true  },
+      ],
+      project: [
+        { name: 'Planning',  color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   sortOrder: 0, isSystem: false },
+        { name: 'Active',    color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 50,  sortOrder: 1, isSystem: false },
+        { name: 'On Hold',   color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 0,   sortOrder: 2, isSystem: false },
+        { name: 'Completed', color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, sortOrder: 3, isSystem: true  },
+        { name: 'Cancelled', color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   sortOrder: 4, isSystem: false },
+      ],
+    };
+
+    const types = pipelineType ? [pipelineType] : Object.keys(DEFAULTS);
+    let totalCreated = 0;
+
+    for (const type of types) {
+      const template = DEFAULTS[type];
+      if (!template) continue;
+
+      const existing = await this.prisma.pipelineStage.count({ where: { organizationId, pipelineType: type } });
+      if (existing > 0) continue;
+
+      const result = await this.prisma.pipelineStage.createMany({
+        data: template.map(s => ({ ...s, pipelineType: type, organizationId })),
+        skipDuplicates: true,
+      });
+      totalCreated += result.count;
     }
 
-    const prospectiveStages = [
-      { name: 'New',         color: 'bg-slate-500',  lightColor: 'bg-slate-50',  border: 'border-slate-200',  probability: 10,  sortOrder: 0, isSystem: false },
-      { name: 'Contacted',   color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 25,  sortOrder: 1, isSystem: false },
-      { name: 'Quoted',      color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 50,  sortOrder: 2, isSystem: false },
-      { name: 'Negotiation', color: 'bg-orange-500', lightColor: 'bg-orange-50', border: 'border-orange-200', probability: 75,  sortOrder: 3, isSystem: false },
-      { name: 'Won',         color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 100, sortOrder: 4, isSystem: true  },
-      { name: 'Lost',        color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   sortOrder: 5, isSystem: true  },
-    ].map(s => ({ ...s, pipelineType: 'prospective_project', organizationId }));
-
-    const projectStages = [
-      { name: 'Planning',  color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   sortOrder: 0, isSystem: true  },
-      { name: 'Active',    color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 50,  sortOrder: 1, isSystem: true  },
-      { name: 'On Hold',   color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 0,   sortOrder: 2, isSystem: false },
-      { name: 'Completed', color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, sortOrder: 3, isSystem: true  },
-      { name: 'Cancelled', color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   sortOrder: 4, isSystem: false },
-    ].map(s => ({ ...s, pipelineType: 'project', organizationId }));
-
-    const result = await this.prisma.pipelineStage.createMany({
-      data: [...prospectiveStages, ...projectStages],
-      skipDuplicates: true,
-    });
-
-    return { created: result.count };
+    return { created: totalCreated };
   }
 
   async reorder(dto: ReorderStagesDto, organizationId: string) {

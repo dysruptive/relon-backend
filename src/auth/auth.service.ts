@@ -766,13 +766,74 @@ export class AuthService {
       organizationId,
     }));
 
-    const projectStages = [
-      { name: 'Planning',  color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   sortOrder: 0, isSystem: true  },
-      { name: 'Active',    color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 50,  sortOrder: 1, isSystem: true  },
-      { name: 'On Hold',   color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 0,   sortOrder: 2, isSystem: false },
-      { name: 'Completed', color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, sortOrder: 3, isSystem: true  },
-      { name: 'Cancelled', color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   sortOrder: 4, isSystem: false },
-    ].map(s => ({ ...s, pipelineType: 'project', organizationId }));
+    type ProjectStage = { name: string; color: string; lightColor: string; border: string; probability: number; isSystem: boolean };
+
+    const SECTOR_PROJECT_STAGES: Record<string, ProjectStage[]> = {
+      construction: [
+        { name: 'Planning',              color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   isSystem: false },
+        { name: 'Procurement',           color: 'bg-purple-500', lightColor: 'bg-purple-50', border: 'border-purple-200', probability: 10,  isSystem: false },
+        { name: 'On Site',               color: 'bg-orange-500', lightColor: 'bg-orange-50', border: 'border-orange-200', probability: 50,  isSystem: false },
+        { name: 'Practical Completion',  color: 'bg-teal-500',   lightColor: 'bg-teal-50',   border: 'border-teal-200',   probability: 90,  isSystem: false },
+        { name: 'Completed',             color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+        { name: 'Cancelled',             color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+      ],
+      architecture: [
+        { name: 'Concept Design',        color: 'bg-purple-500', lightColor: 'bg-purple-50', border: 'border-purple-200', probability: 0,   isSystem: false },
+        { name: 'Design Development',    color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 25,  isSystem: false },
+        { name: 'Construction Docs',     color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 60,  isSystem: false },
+        { name: 'Site Administration',   color: 'bg-orange-500', lightColor: 'bg-orange-50', border: 'border-orange-200', probability: 85,  isSystem: false },
+        { name: 'Completed',             color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+        { name: 'Cancelled',             color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+      ],
+      real_estate: [
+        { name: 'Legal & Contracts',     color: 'bg-purple-500', lightColor: 'bg-purple-50', border: 'border-purple-200', probability: 0,   isSystem: false },
+        { name: 'Development',           color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 30,  isSystem: false },
+        { name: 'Fit-Out',               color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 65,  isSystem: false },
+        { name: 'Handover',              color: 'bg-teal-500',   lightColor: 'bg-teal-50',   border: 'border-teal-200',   probability: 90,  isSystem: false },
+        { name: 'Completed',             color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+        { name: 'Cancelled',             color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+      ],
+      facilities: [
+        { name: 'Scoping',               color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   isSystem: false },
+        { name: 'Mobilisation',          color: 'bg-purple-500', lightColor: 'bg-purple-50', border: 'border-purple-200', probability: 15,  isSystem: false },
+        { name: 'Active',                color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 50,  isSystem: false },
+        { name: 'Review',                color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 80,  isSystem: false },
+        { name: 'Completed',             color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+        { name: 'Cancelled',             color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+      ],
+      professional_services: [
+        { name: 'Kick-off',              color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   isSystem: false },
+        { name: 'In Progress',           color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 50,  isSystem: false },
+        { name: 'Review',                color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 80,  isSystem: false },
+        { name: 'Completed',             color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+        { name: 'Cancelled',             color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+      ],
+      manufacturing: [
+        { name: 'Design & Engineering',  color: 'bg-purple-500', lightColor: 'bg-purple-50', border: 'border-purple-200', probability: 0,   isSystem: false },
+        { name: 'Production',            color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 30,  isSystem: false },
+        { name: 'Quality Control',       color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 70,  isSystem: false },
+        { name: 'Delivery',              color: 'bg-orange-500', lightColor: 'bg-orange-50', border: 'border-orange-200', probability: 90,  isSystem: false },
+        { name: 'Completed',             color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+        { name: 'Cancelled',             color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+      ],
+    };
+
+    const DEFAULT_PROJECT_STAGES: ProjectStage[] = [
+      { name: 'Planning',  color: 'bg-blue-500',   lightColor: 'bg-blue-50',   border: 'border-blue-200',   probability: 0,   isSystem: false },
+      { name: 'Active',    color: 'bg-green-500',  lightColor: 'bg-green-50',  border: 'border-green-200',  probability: 50,  isSystem: false },
+      { name: 'On Hold',   color: 'bg-yellow-500', lightColor: 'bg-yellow-50', border: 'border-yellow-200', probability: 0,   isSystem: false },
+      { name: 'Completed', color: 'bg-gray-400',   lightColor: 'bg-gray-50',   border: 'border-gray-200',   probability: 100, isSystem: true  },
+      { name: 'Cancelled', color: 'bg-red-500',    lightColor: 'bg-red-50',    border: 'border-red-200',    probability: 0,   isSystem: false },
+    ];
+
+    const projectTemplate = (sector && SECTOR_PROJECT_STAGES[sector]) ? SECTOR_PROJECT_STAGES[sector] : DEFAULT_PROJECT_STAGES;
+
+    const projectStages = projectTemplate.map((s, i) => ({
+      ...s,
+      sortOrder: i,
+      pipelineType: 'project',
+      organizationId,
+    }));
 
     await this.database.pipelineStage.createMany({
       data: [...prospectiveStages, ...projectStages],
