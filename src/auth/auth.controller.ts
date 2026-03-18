@@ -11,6 +11,7 @@ import {
   Query,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
@@ -63,14 +64,15 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: any, @Res({ passthrough: true }) res: Response) {
-    const refreshToken = req.cookies?.refresh_token;
+    // Accept refresh token from httpOnly cookie (same-site) or request body (cross-site fallback)
+    const refreshToken = req.cookies?.refresh_token || req.body?.refresh_token;
     if (!refreshToken) {
-      throw new Error('No refresh token provided');
+      throw new UnauthorizedException('No refresh token provided');
     }
     const result = await this.authService.refreshAccessTokenFromJwt(refreshToken);
     this.setAuthCookie(res, result.access_token);
     this.setRefreshCookie(res, result.refresh_token);
-    return { access_token: result.access_token, user: result.user };
+    return { access_token: result.access_token, refresh_token: result.refresh_token, user: result.user };
   }
 
   @Public()
