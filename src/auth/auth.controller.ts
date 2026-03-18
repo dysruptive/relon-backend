@@ -191,8 +191,8 @@ export class AuthController {
       // Short-lived pending token (15min, not full access) — ok to send via cookie
       (res as any).cookie('oauth_pending', result.token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+        secure: this.isProd,
+        sameSite: this.isProd ? 'none' : 'lax',
         maxAge: 15 * 60 * 1000,
       });
       return (res as any).redirect(`${frontendUrl}/oauth-complete`);
@@ -216,17 +216,21 @@ export class AuthController {
     this.setAuthCookie(res, result.access_token);
     this.setRefreshCookie(res, result.refresh_token);
     // Clear the pending token cookie
-    (res as any).cookie('oauth_pending', '', { maxAge: 0, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    (res as any).cookie('oauth_pending', '', { maxAge: 0, httpOnly: true, secure: this.isProd, sameSite: this.isProd ? 'none' : 'lax' });
     return result;
   }
 
   // ── Cookie helpers ─────────────────────────────────────────────────────────
 
+  private get isProd() {
+    return process.env.NODE_ENV === 'production';
+  }
+
   private setAuthCookie(res: Response, token: string) {
     (res as any).cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/',
     });
@@ -235,8 +239,8 @@ export class AuthController {
   private clearAuthCookie(res: Response) {
     (res as any).cookie('token', '', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
       maxAge: 0,
       path: '/',
     });
@@ -245,8 +249,8 @@ export class AuthController {
   private setRefreshCookie(res: Response, token: string) {
     (res as any).cookie('refresh_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/api/auth/refresh', // Only sent to the refresh endpoint
     });
@@ -255,8 +259,8 @@ export class AuthController {
   private clearRefreshCookie(res: Response) {
     (res as any).cookie('refresh_token', '', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
       maxAge: 0,
       path: '/api/auth/refresh',
     });

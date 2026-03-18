@@ -3,8 +3,6 @@ import './instrument';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
-import { exec } from 'child_process';
-import * as path from 'path';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const cookieParser = require('cookie-parser');
 import { Logger } from 'nestjs-pino';
@@ -137,29 +135,11 @@ async function bootstrap() {
 
     console.log(`Relon CRM Backend started on http://${host}:${port}`);
     console.log(`API available at http://${host}:${port}/api`);
-
-    // Run migrations asynchronously after port is bound so healthcheck can pass immediately
-    runMigrationsAsync();
   } catch (error) {
     console.error('❌ Failed to start application:');
     console.error(error);
     process.exit(1);
   }
-}
-
-function runMigrationsAsync() {
-  const prismaBin = path.join(__dirname, '..', 'node_modules', '.bin', 'prisma');
-  const cmd = `"${prismaBin}" migrate deploy`;
-  console.log('🔄 Running database migrations in background...');
-  exec(cmd, { cwd: path.join(__dirname, '..'), timeout: 120000 }, (error, stdout, stderr) => {
-    if (stdout) console.log(`[migrations] ${stdout.trim()}`);
-    if (stderr) console.warn(`[migrations] ${stderr.trim()}`);
-    if (error) {
-      console.error(`[migrations] ❌ Migration failed (code ${error.code}): ${error.message}`);
-    } else {
-      console.log('[migrations] ✅ Migrations complete');
-    }
-  });
 }
 
 bootstrap();
