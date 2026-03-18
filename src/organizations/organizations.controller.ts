@@ -22,7 +22,7 @@ export class OrganizationsController {
   @Patch('me')
   updateMyOrg(
     @CurrentUser() user: any,
-    @Body() body: { name?: string; industry?: string; size?: string; country?: string; currency?: string },
+    @Body() body: { name?: string; industry?: string; size?: string; country?: string; currency?: string; timezone?: string },
   ) {
     return this.orgsService.update(user.organizationId, body);
   }
