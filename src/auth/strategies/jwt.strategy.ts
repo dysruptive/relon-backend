@@ -11,11 +11,14 @@ export interface JwtPayload {
   organizationId: string;
 }
 
-// Extract JWT from Bearer header first, then fall back to httpOnly cookie
+// Extract JWT from Bearer header first, then httpOnly cookie, then ?token= query param (for SSE)
 function jwtFromRequestOrCookie(req: Request): string | null {
   let token: string | null = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
   if (!token && req?.cookies?.token) {
     token = req.cookies.token;
+  }
+  if (!token && req?.query?.token) {
+    token = req.query.token as string;
   }
   return token;
 }
