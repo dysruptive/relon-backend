@@ -56,6 +56,6 @@ export class OrganizationsController {
 
   @Post('seed-demo-data')
   seedDemoData(@CurrentUser() user: any) {
-    return this.orgsService.seedDemoData(user.organizationId, user.sub);
+    return this.orgsService.seedDemoData(user.organizationId, user.id);
   }
 }
