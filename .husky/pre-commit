@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "Running backend type check..."
+npx tsc --noEmit --skipLibCheck
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript errors in backend. Fix them before committing."
+  exit 1
+fi
+echo "✅ Type check passed."
