@@ -4,7 +4,7 @@
 A multi-tenant B2B SaaS CRM for construction/services companies. Two-tier architecture:
 - **Backend**: NestJS + Prisma + PostgreSQL (Neon), at `backend/`
 - **Frontend**: Next.js 16 (App Router), at `frontend/`
-- **DB**: Neon PostgreSQL — always use `./node_modules/.bin/prisma`, never global `npx prisma`
+- **DB**: Neon PostgreSQL — always use `npm run prisma:*` scripts, never global `npx prisma`
 
 ---
 
@@ -210,7 +210,7 @@ Use `class-validator` decorators on all DTOs. The global `ValidationPipe` has `w
 > **Note:** When making fixes from a file, do **not** add fix numbers as comments in the code.
 
 ### Prisma Migrations (v7)
-- **Never** use global `npx prisma` — always `./node_modules/.bin/prisma` (or `npm run prisma:*` scripts)
+- **Never** use global `npx prisma` — always use `npm run prisma:*` scripts
 - **Prisma v7 change**: `migrate dev` no longer auto-runs `prisma generate` or the seed script. After any migration, you must run `npm run prisma:generate` and `npm run prisma:seed` explicitly.
 - For new columns with existing data: create migration manually in `prisma/migrations/[timestamp]_[name]/migration.sql` and apply with `npm run prisma:deploy` (not `migrate dev` — it requires interactive TTY)
 - When adding NOT NULL columns: add as nullable first, backfill, then make NOT NULL

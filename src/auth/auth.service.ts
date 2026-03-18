@@ -116,6 +116,8 @@ export class AuthService {
         name: user.name,
         role: user.role,
         organizationId: user.organizationId,
+        isOnboarded: user.isOnboarded,
+        isEmailVerified: user.isEmailVerified,
       },
       permissions,
     };
