@@ -45,9 +45,6 @@ export const ALL_PERMISSIONS: PermissionDefinition[] = [
   { key: 'users:edit', label: 'Edit Users', module: 'Users' },
   { key: 'users:delete', label: 'Delete Users', module: 'Users' },
 
-  // Dashboard
-  { key: 'dashboard:view', label: 'View Dashboard', module: 'Dashboard' },
-
   // AI Settings
   { key: 'ai_settings:view', label: 'View AI Settings', module: 'AI Settings' },
   { key: 'ai_settings:edit', label: 'Edit AI Settings', module: 'AI Settings' },
@@ -108,9 +105,6 @@ export const ALL_PERMISSIONS: PermissionDefinition[] = [
   { key: 'custom_fields:read', label: 'View Custom Fields', module: 'Custom Fields' },
   { key: 'custom_fields:manage', label: 'Manage Custom Fields', module: 'Custom Fields' },
 
-  // Dashboard
-  { key: 'dashboard:edit', label: 'Customize Dashboard', module: 'Dashboard' },
-
   // Workflows
   { key: 'workflows:view', label: 'View Workflows', module: 'Workflows' },
   { key: 'workflows:create', label: 'Create Workflows', module: 'Workflows' },
@@ -134,7 +128,6 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     'costs:view', 'costs:create', 'costs:delete',
     'teams:view', 'teams:create', 'teams:edit', 'teams:delete', 'teams:manage_members',
     'users:view', 'users:create', 'users:edit', 'users:delete',
-    'dashboard:view',
     'ai_settings:view', 'ai_settings:edit',
     'audit_logs:view',
     'permissions:view',

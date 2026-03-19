@@ -4,7 +4,6 @@ import { DashboardMetricsService } from './dashboard-metrics.service';
 import { DashboardTrendsService } from './dashboard-trends.service';
 import { DashboardAiService } from './dashboard-ai.service';
 import { AiService } from '../ai/ai.service';
-import { Permissions } from '../permissions/permissions.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('dashboard')
@@ -18,7 +17,6 @@ export class DashboardController {
   ) {}
 
   @Get('metrics')
-  @Permissions('dashboard:view')
   async getMetrics(
     @CurrentUser() user: any,
     @Query('period') period: 'week' | 'month' | 'quarter' = 'month',
@@ -32,7 +30,6 @@ export class DashboardController {
   }
 
   @Get('executive-summary')
-  @Permissions('dashboard:view')
   async getExecutiveSummary(
     @CurrentUser() user: any,
     @Query('provider') provider: string = 'openai',
@@ -61,7 +58,6 @@ export class DashboardController {
   }
 
   @Get('revenue-breakdown')
-  @Permissions('dashboard:view')
   async getRevenueBreakdown(
     @CurrentUser() user: any,
     @Query('period') period: 'week' | 'month' | 'quarter' = 'month',
@@ -84,7 +80,6 @@ export class DashboardController {
   }
 
   @Get('project-analytics')
-  @Permissions('dashboard:view')
   async getProjectAnalytics(
     @CurrentUser() user: any,
     @Query('period') period: 'week' | 'month' | 'quarter' = 'month',
@@ -105,25 +100,21 @@ export class DashboardController {
   }
 
   @Get('revenue-trend')
-  @Permissions('dashboard:view')
   async getRevenueTrend(@CurrentUser() user: any) {
     return this.dashboardTrendsService.getRevenueTrend(user.organizationId);
   }
 
   @Get('lead-volume-trend')
-  @Permissions('dashboard:view')
   async getLeadVolumeTrend(@CurrentUser() user: any) {
     return this.dashboardTrendsService.getLeadVolumeTrend(user.organizationId);
   }
 
   @Get('pipeline-insights')
-  @Permissions('dashboard:view')
   async getPipelineInsights(@CurrentUser() user: any) {
     return this.dashboardAiService.getPipelineInsights(user.organizationId);
   }
 
   @Get('calendar-events')
-  @Permissions('dashboard:view')
   async getCalendarEvents(
     @CurrentUser() user: any,
     @Query('start') start: string,
@@ -133,13 +124,11 @@ export class DashboardController {
   }
 
   @Get('layout')
-  @Permissions('dashboard:view')
   async getLayout(@CurrentUser() user: any) {
     return this.dashboardService.getDashboardLayout(user.sub, user.organizationId);
   }
 
   @Put('layout')
-  @Permissions('dashboard:view')
   async saveLayout(@CurrentUser() user: any, @Body() body: { widgets: unknown[] }) {
     return this.dashboardService.saveDashboardLayout(user.sub, user.organizationId, body.widgets);
   }
