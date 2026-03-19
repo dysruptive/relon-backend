@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsUUID } from 'class-validator';
 
 export class CreateTeamDto {
   @IsString()
@@ -15,4 +15,9 @@ export class CreateTeamDto {
   @IsString()
   @IsOptional()
   managerId?: string;
+
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  memberIds?: string[];
 }

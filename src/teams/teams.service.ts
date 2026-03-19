@@ -21,7 +21,7 @@ export class TeamsService {
       }
     }
 
-    return this.prisma.team.create({
+    const team = await this.prisma.team.create({
       data: {
         name: createTeamDto.name,
         description: createTeamDto.description,
@@ -30,6 +30,15 @@ export class TeamsService {
         organizationId,
       },
     });
+
+    if (createTeamDto.memberIds?.length) {
+      await this.prisma.user.updateMany({
+        where: { id: { in: createTeamDto.memberIds }, organizationId },
+        data: { teamId: team.id },
+      });
+    }
+
+    return team;
   }
 
   async findAll(organizationId: string) {
