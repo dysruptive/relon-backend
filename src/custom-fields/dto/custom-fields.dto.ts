@@ -10,7 +10,7 @@ export class CreateCustomFieldDefinitionDto {
   @Matches(/^[a-z_][a-z0-9_]*$/, { message: 'fieldKey must match [a-z_][a-z0-9_]*' })
   fieldKey: string;
 
-  @IsIn(['text', 'select', 'checkbox', 'date', 'number'])
+  @IsIn(['text', 'number', 'date', 'checkbox', 'select', 'multi_select', 'url'])
   fieldType: string;
 
   @IsOptional()
@@ -32,7 +32,7 @@ export class UpdateCustomFieldDefinitionDto {
   label?: string;
 
   @IsOptional()
-  @IsIn(['text', 'select', 'checkbox', 'date', 'number'])
+  @IsIn(['text', 'number', 'date', 'checkbox', 'select', 'multi_select', 'url'])
   fieldType?: string;
 
   @IsOptional()
