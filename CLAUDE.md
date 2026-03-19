@@ -3,7 +3,7 @@
 ## Project Overview
 A multi-tenant B2B SaaS CRM for construction/services companies. Two-tier architecture:
 - **Backend**: NestJS + Prisma + PostgreSQL (Neon), at `backend/`
-- **Frontend**: Next.js 16 (App Router), at `frontend/`
+- **Frontend**: Next.js 16 (App Router), at `/Users/joel/Documents/relon-frontend/`
 - **DB**: Neon PostgreSQL — always use `npm run prisma:*` scripts, never global `npx prisma`
 
 ---
