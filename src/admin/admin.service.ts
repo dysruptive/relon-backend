@@ -35,9 +35,9 @@ export class AdminService {
     // CEO can manage all roles
     if (currentUserRole === 'CEO') return true;
 
-    // ADMIN can manage any role except CEO and ADMIN (includes custom roles)
+    // ADMIN can manage any role except CEO (includes other ADMINs and custom roles)
     if (currentUserRole === 'ADMIN') {
-      return !['CEO', 'ADMIN'].includes(targetUserRole);
+      return targetUserRole !== 'CEO';
     }
 
     // BDM can manage: SALES only (not CEO, ADMIN, or other BDM)
