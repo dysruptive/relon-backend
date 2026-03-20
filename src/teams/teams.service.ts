@@ -41,6 +41,15 @@ export class TeamsService {
     return team;
   }
 
+  async findMyTeam(userId: string, organizationId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, organizationId },
+      select: { teamId: true },
+    });
+    if (!user?.teamId) return null;
+    return this.findOne(user.teamId, organizationId);
+  }
+
   async findAll(organizationId: string) {
     return this.prisma.team.findMany({
       where: { organizationId },

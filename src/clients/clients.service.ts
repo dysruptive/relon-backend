@@ -23,13 +23,23 @@ export class ClientsService {
       // Sales executives see only their assigned clients
       where.accountManagerId = userId;
     } else if (userRole === 'BDM') {
-      // BDMs see their team's clients — fetch only IDs (lean query)
+      // BDMs see their team's clients OR clients linked to leads they are a team member of
       const teamMembers = await this.prisma.user.findMany({
         where: { managerId: userId, organizationId },
         select: { id: true },
       });
       const teamMemberIds = teamMembers.map((m) => m.id);
-      where.accountManagerId = { in: [...teamMemberIds, userId] };
+
+      const leadClients = await this.prisma.lead.findMany({
+        where: { organizationId, deletedAt: null, teamMembers: { some: { userId } }, clientId: { not: null } },
+        select: { clientId: true },
+      });
+      const leadClientIds = leadClients.map((l) => l.clientId).filter(Boolean) as string[];
+
+      where.OR = [
+        { accountManagerId: { in: [...teamMemberIds, userId] } },
+        ...(leadClientIds.length > 0 ? [{ id: { in: leadClientIds } }] : []),
+      ];
     }
     // CEO, ADMIN, DESIGNER, QS see all clients (no filter beyond org)
 

@@ -29,6 +29,12 @@ export class TeamsController {
     return this.teamsService.findAll(user.organizationId);
   }
 
+  @Get('my-team')
+  @Permissions('teams:view')
+  getMyTeam(@CurrentUser() user: any) {
+    return this.teamsService.findMyTeam(user.sub, user.organizationId);
+  }
+
   @Get(':id')
   @Permissions('teams:view')
   findOne(@Param('id') id: string, @CurrentUser() user: any) {

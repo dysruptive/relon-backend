@@ -35,13 +35,16 @@ export class LeadsService {
         { teamMembers: { some: { userId } } },
       ];
     } else if (userRole === 'BDM') {
-      // BDMs see their team's leads — fetch only IDs (lean query)
+      // BDMs see their team's leads OR leads they are a team member of
       const teamMembers = await this.prisma.user.findMany({
         where: { managerId: userId, organizationId },
         select: { id: true },
       });
       const teamMemberIds = teamMembers.map((m) => m.id);
-      where.assignedToId = { in: [...teamMemberIds, userId] };
+      where.OR = [
+        { assignedToId: { in: [...teamMemberIds, userId] } },
+        { teamMembers: { some: { userId } } },
+      ];
     } else if (userRole === 'DESIGNER' || userRole === 'QS') {
       // These roles only see leads where they are a team member
       where.teamMembers = { some: { userId } };
