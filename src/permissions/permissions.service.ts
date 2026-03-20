@@ -3,6 +3,7 @@ import { PrismaService } from '../database/prisma.service';
 import {
   ALL_PERMISSIONS,
   DEFAULT_ROLE_PERMISSIONS,
+  PERMISSION_IMPLICATIONS,
 } from './permissions.constants';
 
 @Injectable()
@@ -137,18 +138,20 @@ export class PermissionsService {
     this.cache.clear();
 
     for (const rp of allPerms) {
-      // Store with org-scoped key
       const orgKey = `${rp.organizationId}:${rp.role}`;
       if (!this.cache.has(orgKey)) {
         this.cache.set(orgKey, new Set());
       }
-      this.cache.get(orgKey)!.add(rp.permission);
+      const set = this.cache.get(orgKey)!;
+      set.add(rp.permission);
 
-      // Legacy role-only key intentionally removed — it merged cross-org permissions
+      // Apply implication rules: having a write permission grants its implied read permissions
+      const implied = PERMISSION_IMPLICATIONS[rp.permission as keyof typeof PERMISSION_IMPLICATIONS];
+      if (implied) {
+        for (const p of implied) set.add(p);
+      }
     }
 
-    this.logger.log(
-      `Permissions cache refreshed: ${allPerms.length} entries.`,
-    );
+    this.logger.log(`Permissions cache refreshed: ${allPerms.length} entries.`);
   }
 }

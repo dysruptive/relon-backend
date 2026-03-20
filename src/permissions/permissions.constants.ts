@@ -120,6 +120,62 @@ export const ALL_PERMISSIONS = [
 
 export type PermissionKey = (typeof ALL_PERMISSIONS)[number]['key'];
 
+/**
+ * Permission implication rules.
+ * If a role has the key permission, it automatically gets the implied permissions too.
+ * This means you never need to explicitly grant read access when write access exists.
+ */
+export const PERMISSION_IMPLICATIONS: Partial<Record<PermissionKey, PermissionKey[]>> = {
+  'leads:create':   ['leads:view'],
+  'leads:edit':     ['leads:view'],
+  'leads:delete':   ['leads:view'],
+  'leads:analyze':  ['leads:view'],
+  'clients:create': ['clients:view'],
+  'clients:edit':   ['clients:view'],
+  'clients:delete': ['clients:view'],
+  'clients:health': ['clients:view'],
+  'clients:upsell': ['clients:view'],
+  'clients:convert':['clients:view'],
+  'projects:create':['projects:view'],
+  'projects:edit':  ['projects:view'],
+  'projects:delete':['projects:view'],
+  'costs:create':   ['costs:view'],
+  'costs:delete':   ['costs:view'],
+  'teams:create':   ['teams:view'],
+  'teams:edit':     ['teams:view'],
+  'teams:delete':   ['teams:view'],
+  'teams:manage_members': ['teams:view'],
+  'users:create':   ['users:view'],
+  'users:edit':     ['users:view'],
+  'users:delete':   ['users:view'],
+  'tasks:create':   ['tasks:read'],
+  'tasks:edit':     ['tasks:read'],
+  'tasks:delete':   ['tasks:read'],
+  'tasks:view_all': ['tasks:read'],
+  'quotes:create':  ['quotes:read'],
+  'quotes:edit':    ['quotes:read'],
+  'quotes:delete':  ['quotes:read'],
+  'quotes:send':    ['quotes:read'],
+  'contacts:create':['contacts:read'],
+  'contacts:edit':  ['contacts:read'],
+  'contacts:delete':['contacts:read'],
+  'custom_fields:manage': ['custom_fields:read'],
+  'workflows:create':['workflows:view'],
+  'workflows:edit': ['workflows:view'],
+  'workflows:delete':['workflows:view'],
+  'forms:create':   ['forms:read'],
+  'forms:edit':     ['forms:read'],
+  'forms:delete':   ['forms:read'],
+  'time_tracking:create':    ['time_tracking:read'],
+  'time_tracking:edit_own':  ['time_tracking:read'],
+  'time_tracking:edit_all':  ['time_tracking:read'],
+  'service_items:manage':    ['service_items:read'],
+  'ai_settings:edit':        ['ai_settings:view'],
+  'permissions:edit':        ['permissions:view'],
+  'reports:export':          ['reports:view'],
+  'analytics:ai':            ['analytics:view'],
+};
+
 // Default permissions matching current hardcoded behavior
 export const DEFAULT_ROLE_PERMISSIONS: Record<string, PermissionKey[]> = {
   CEO: ALL_PERMISSIONS.map((p) => p.key), // CEO gets everything
