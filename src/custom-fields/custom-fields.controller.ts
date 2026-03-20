@@ -9,7 +9,7 @@ export class CustomFieldsController {
   constructor(private readonly customFieldsService: CustomFieldsService) {}
 
   @Get('definitions')
-  @Permissions('custom_fields:read')
+  @Permissions('leads:read')
   getDefinitions(@CurrentUser() user: any, @Query('entityType') entityType?: string) {
     return this.customFieldsService.getDefinitions(user.organizationId, entityType);
   }
@@ -33,13 +33,13 @@ export class CustomFieldsController {
   }
 
   @Get('values')
-  @Permissions('custom_fields:read')
+  @Permissions('leads:read')
   getValues(@CurrentUser() user: any, @Query('entityType') entityType: string, @Query('entityId') entityId: string) {
     return this.customFieldsService.getValues(user.organizationId, entityType, entityId);
   }
 
   @Put('values')
-  @Permissions('custom_fields:read')
+  @Permissions('leads:create')
   saveValues(@Body() dto: BulkSaveCustomFieldValuesDto, @CurrentUser() user: any) {
     return this.customFieldsService.saveValues(dto, user.organizationId);
   }
