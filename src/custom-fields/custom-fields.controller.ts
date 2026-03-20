@@ -9,7 +9,7 @@ export class CustomFieldsController {
   constructor(private readonly customFieldsService: CustomFieldsService) {}
 
   @Get('definitions')
-  @Permissions('leads:read')
+  @Permissions('leads:view')
   getDefinitions(@CurrentUser() user: any, @Query('entityType') entityType?: string) {
     return this.customFieldsService.getDefinitions(user.organizationId, entityType);
   }
@@ -33,7 +33,7 @@ export class CustomFieldsController {
   }
 
   @Get('values')
-  @Permissions('leads:read')
+  @Permissions('leads:view')
   getValues(@CurrentUser() user: any, @Query('entityType') entityType: string, @Query('entityId') entityId: string) {
     return this.customFieldsService.getValues(user.organizationId, entityType, entityId);
   }
