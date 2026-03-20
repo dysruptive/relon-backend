@@ -182,6 +182,29 @@ export class AdminService {
   // ==================== User Management Methods ====================
 
   /**
+   * Get all active members in the org for assignment purposes (minimal fields, no role restrictions)
+   */
+  async getMembers(organizationId: string) {
+    const users = await this.prisma.user.findMany({
+      where: { organizationId, status: 'Active' },
+      select: {
+        id: true,
+        name: true,
+        role: true,
+        team: { select: { name: true } },
+        teamName: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+    return users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      role: u.role,
+      teamName: u.team?.name || u.teamName || null,
+    }));
+  }
+
+  /**
    * Get all users (filtered by role hierarchy, scoped to organization)
    */
   async getAllUsers(currentUserId: string, currentUserRole: string, organizationId: string) {

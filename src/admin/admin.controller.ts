@@ -24,6 +24,12 @@ export class AdminController {
     private readonly auditService: AuditService,
   ) {}
 
+  @Get('members')
+  @Permissions('leads:view')
+  async getMembers(@Request() req) {
+    return this.adminService.getMembers(req.user.organizationId);
+  }
+
   @Get('users')
   @Permissions('users:view')
   async getAllUsers(@Request() req) {
