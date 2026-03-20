@@ -29,8 +29,11 @@ export class LeadsService {
     const where: any = { organizationId, deletedAt: null };
 
     if (userRole === 'SALES') {
-      // Sales executives see only their assigned leads
-      where.assignedToId = userId;
+      // Sales executives see leads they are assigned to OR are a team member of
+      where.OR = [
+        { assignedToId: userId },
+        { teamMembers: { some: { userId } } },
+      ];
     } else if (userRole === 'BDM') {
       // BDMs see their team's leads — fetch only IDs (lean query)
       const teamMembers = await this.prisma.user.findMany({
@@ -148,7 +151,11 @@ export class LeadsService {
     }
 
     // Check access permissions
-    if (userRole === 'SALES' && lead.assignedToId !== userId) {
+    if (
+      userRole === 'SALES' &&
+      lead.assignedToId !== userId &&
+      !lead.teamMembers.some((m) => m.userId === userId)
+    ) {
       throw new Error('You do not have permission to view this lead');
     }
 
