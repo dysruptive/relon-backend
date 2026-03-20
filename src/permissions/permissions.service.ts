@@ -76,8 +76,8 @@ export class PermissionsService {
     permissions: string[],
     organizationId: string,
   ): Promise<void> {
-    // Validate permission keys
-    const validKeys = new Set(ALL_PERMISSIONS.map((p) => p.key));
+    // Validate permission keys — accepts raw strings from callers (e.g. admin UI) and filters to known keys
+    const validKeys = new Set<string>(ALL_PERMISSIONS.map((p) => p.key));
     const filtered = permissions.filter((p) => validKeys.has(p));
 
     // Delete existing permissions for this role within the org

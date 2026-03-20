@@ -18,7 +18,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  @Permissions('quotes:view')
+  @Permissions('quotes:read')
   findAll(
     @CurrentUser() user: any,
     @Query('includeInactive') includeInactive?: string,
@@ -27,7 +27,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  @Permissions('quotes:view')
+  @Permissions('quotes:read')
   findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.productsService.findOne(id, user.organizationId);
   }

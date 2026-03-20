@@ -4,7 +4,7 @@ export interface PermissionDefinition {
   module: string;
 }
 
-export const ALL_PERMISSIONS: PermissionDefinition[] = [
+export const ALL_PERMISSIONS = [
   // Leads
   { key: 'leads:view', label: 'View Leads', module: 'Leads' },
   { key: 'leads:create', label: 'Create Leads', module: 'Leads' },
@@ -116,10 +116,12 @@ export const ALL_PERMISSIONS: PermissionDefinition[] = [
   { key: 'forms:create', label: 'Create Forms', module: 'Forms' },
   { key: 'forms:edit', label: 'Edit Forms', module: 'Forms' },
   { key: 'forms:delete', label: 'Delete Forms', module: 'Forms' },
-];
+] as const satisfies PermissionDefinition[];
+
+export type PermissionKey = (typeof ALL_PERMISSIONS)[number]['key'];
 
 // Default permissions matching current hardcoded behavior
-export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
+export const DEFAULT_ROLE_PERMISSIONS: Record<string, PermissionKey[]> = {
   CEO: ALL_PERMISSIONS.map((p) => p.key), // CEO gets everything
   ADMIN: [
     'leads:view', 'leads:create', 'leads:edit', 'leads:delete', 'leads:analyze',
