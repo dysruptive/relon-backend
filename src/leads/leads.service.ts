@@ -3,7 +3,6 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { LeadStage } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { LeadMetricsService } from './lead-metrics.service';
 import { LeadsStageService } from './leads-stage.service';
@@ -361,7 +360,7 @@ export class LeadsService {
 
   async bulkUpdate(
     ids: string[],
-    data: { stage?: LeadStage; assignedToId?: string; urgency?: string },
+    data: { stage?: string; assignedToId?: string; urgency?: string },
     userId: string,
     organizationId: string,
   ) {

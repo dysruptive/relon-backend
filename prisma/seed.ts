@@ -239,6 +239,91 @@ async function main() {
   }
   console.log(`✅ Seeded ${permData.length} role permissions`);
 
+  // ── Seed dropdown options ─────────────────────────────────────────────────
+  type DropdownSeed = { category: string; value: string; label: string; metadata?: object; sortOrder: number; isSystem?: boolean };
+  const dropdownRows: DropdownSeed[] = [
+    // urgency
+    { category: 'urgency', value: 'low',      label: 'Low',      metadata: { color: '#22c55e' }, sortOrder: 0, isSystem: true },
+    { category: 'urgency', value: 'medium',   label: 'Medium',   metadata: { color: '#f59e0b' }, sortOrder: 1, isSystem: true },
+    { category: 'urgency', value: 'high',     label: 'High',     metadata: { color: '#f97316' }, sortOrder: 2, isSystem: true },
+    { category: 'urgency', value: 'critical', label: 'Critical', metadata: { color: '#ef4444' }, sortOrder: 3, isSystem: true },
+    // source
+    { category: 'source', value: 'cold_call',       label: 'Cold Call',        sortOrder: 0 },
+    { category: 'source', value: 'referral',        label: 'Referral',         sortOrder: 1 },
+    { category: 'source', value: 'website',         label: 'Website',          sortOrder: 2 },
+    { category: 'source', value: 'email_campaign',  label: 'Email Campaign',   sortOrder: 3 },
+    { category: 'source', value: 'social_media',    label: 'Social Media',     sortOrder: 4 },
+    { category: 'source', value: 'exhibition',      label: 'Exhibition/Event', sortOrder: 5 },
+    { category: 'source', value: 'tender',          label: 'Tender',           sortOrder: 6 },
+    { category: 'source', value: 'repeat_business', label: 'Repeat Business',  sortOrder: 7 },
+    { category: 'source', value: 'other',           label: 'Other',            sortOrder: 8 },
+    // project_risk_status
+    { category: 'project_risk_status', value: 'low',      label: 'Low Risk',    metadata: { color: '#22c55e' }, sortOrder: 0, isSystem: true },
+    { category: 'project_risk_status', value: 'medium',   label: 'Medium Risk', metadata: { color: '#f59e0b' }, sortOrder: 1, isSystem: true },
+    { category: 'project_risk_status', value: 'high',     label: 'High Risk',   metadata: { color: '#f97316' }, sortOrder: 2, isSystem: true },
+    { category: 'project_risk_status', value: 'critical', label: 'Critical',    metadata: { color: '#ef4444' }, sortOrder: 3, isSystem: true },
+    // individual_type
+    { category: 'individual_type', value: 'contractor',    label: 'Contractor',     sortOrder: 0 },
+    { category: 'individual_type', value: 'consultant',    label: 'Consultant',     sortOrder: 1 },
+    { category: 'individual_type', value: 'subcontractor', label: 'Sub-contractor', sortOrder: 2 },
+    { category: 'individual_type', value: 'freelancer',    label: 'Freelancer',     sortOrder: 3 },
+    { category: 'individual_type', value: 'advisor',       label: 'Advisor',        sortOrder: 4 },
+    // meeting_type
+    { category: 'meeting_type', value: 'in-person', label: 'In-Person',  sortOrder: 0 },
+    { category: 'meeting_type', value: 'video',     label: 'Video Call',  sortOrder: 1 },
+    { category: 'meeting_type', value: 'phone',     label: 'Phone Call',  sortOrder: 2 },
+    // activity_type (construction defaults)
+    { category: 'activity_type', value: 'site_visit',       label: 'Site Visit',       sortOrder: 0 },
+    { category: 'activity_type', value: 'client_meeting',   label: 'Client Meeting',   sortOrder: 1 },
+    { category: 'activity_type', value: 'tender_review',    label: 'Tender Review',    sortOrder: 2 },
+    { category: 'activity_type', value: 'progress_meeting', label: 'Progress Meeting', sortOrder: 3 },
+    { category: 'activity_type', value: 'handover',         label: 'Handover',         sortOrder: 4 },
+    { category: 'activity_type', value: 'follow_up',        label: 'Follow-up',        sortOrder: 5 },
+    // file_category (construction defaults)
+    { category: 'file_category', value: 'contract',      label: 'Contract',      sortOrder: 0 },
+    { category: 'file_category', value: 'drawing',       label: 'Drawing',       sortOrder: 1 },
+    { category: 'file_category', value: 'specification', label: 'Specification', sortOrder: 2 },
+    { category: 'file_category', value: 'site_photo',    label: 'Site Photo',    sortOrder: 3 },
+    { category: 'file_category', value: 'invoice',       label: 'Invoice',       sortOrder: 4 },
+    { category: 'file_category', value: 'boq',           label: 'BOQ',           sortOrder: 5 },
+    { category: 'file_category', value: 'permit',        label: 'Permit',        sortOrder: 6 },
+    { category: 'file_category', value: 'other',         label: 'Other',         sortOrder: 7 },
+    // cost_category (construction defaults)
+    { category: 'cost_category', value: 'materials',     label: 'Materials',     sortOrder: 0 },
+    { category: 'cost_category', value: 'labour',        label: 'Labour',        sortOrder: 1 },
+    { category: 'cost_category', value: 'equipment',     label: 'Equipment',     sortOrder: 2 },
+    { category: 'cost_category', value: 'subcontractor', label: 'Subcontractor', sortOrder: 3 },
+    { category: 'cost_category', value: 'overhead',      label: 'Overhead',      sortOrder: 4 },
+    { category: 'cost_category', value: 'transport',     label: 'Transport',     sortOrder: 5 },
+    // client_segment (construction)
+    { category: 'client_segment', value: 'residential', label: 'Residential', sortOrder: 0 },
+    { category: 'client_segment', value: 'commercial',  label: 'Commercial',  sortOrder: 1 },
+    { category: 'client_segment', value: 'industrial',  label: 'Industrial',  sortOrder: 2 },
+    { category: 'client_segment', value: 'government',  label: 'Government',  sortOrder: 3 },
+    { category: 'client_segment', value: 'developer',   label: 'Developer',   sortOrder: 4 },
+    // team_type (construction)
+    { category: 'team_type', value: 'site_team',   label: 'Site Team',   sortOrder: 0 },
+    { category: 'team_type', value: 'estimating',  label: 'Estimating',  sortOrder: 1 },
+    { category: 'team_type', value: 'design',      label: 'Design',      sortOrder: 2 },
+    { category: 'team_type', value: 'procurement', label: 'Procurement', sortOrder: 3 },
+    { category: 'team_type', value: 'safety',      label: 'Safety',      sortOrder: 4 },
+  ];
+
+  await prisma.dropdownOption.createMany({
+    data: dropdownRows.map(r => ({
+      organizationId: orgId,
+      category:       r.category,
+      value:          r.value,
+      label:          r.label,
+      metadata:       r.metadata ?? undefined,
+      sortOrder:      r.sortOrder,
+      isSystem:       r.isSystem ?? false,
+      isActive:       true,
+    })),
+    skipDuplicates: true,
+  });
+  console.log(`✅ Seeded ${dropdownRows.length} dropdown options`);
+
   // ── Seed AI Settings ──────────────────────────────────────────────────────
   await prisma.aISettings.upsert({
     where: { organizationId: orgId },

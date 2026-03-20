@@ -336,7 +336,9 @@ export class AuthService {
     await this.seedDefaultPipelineStages(result.organization.id, registerDto.sector);
 
     // Seed default dropdown options for new org
-    await this.seedDefaultDropdownOptions(result.organization.id, registerDto.sector);
+    await this.seedDefaultDropdownOptions(result.organization.id, registerDto.sector).catch((err) => {
+      console.error('[register] seedDefaultDropdownOptions failed for org', result.organization.id, err);
+    });
 
     // Send welcome email (non-blocking — email outage must not fail registration)
     this.emailService.sendWelcomeEmail(result.user.email, result.user.name).catch(() => {});
@@ -656,7 +658,9 @@ export class AuthService {
     await this.seedDefaultPipelineStages(result.organization.id, sector);
 
     // Seed default dropdown options for new org
-    await this.seedDefaultDropdownOptions(result.organization.id, sector);
+    await this.seedDefaultDropdownOptions(result.organization.id, sector).catch((err) => {
+      console.error('[oauthComplete] seedDefaultDropdownOptions failed for org', result.organization.id, err);
+    });
 
     // Send welcome email (non-blocking)
     this.emailService.sendWelcomeEmail(result.user.email, result.user.name).catch(() => {});
@@ -842,8 +846,7 @@ export class AuthService {
   }
 
   private async seedDefaultDropdownOptions(organizationId: string, sector?: string): Promise<void> {
-    const existing = await this.database.dropdownOption.count({ where: { organizationId } });
-    if (existing > 0) return;
+    console.log(`[seedDefaultDropdownOptions] org=${organizationId} sector=${sector ?? 'none'}`);
 
     type DropdownSeed = { value: string; label: string; metadata?: object; sortOrder: number; isSystem?: boolean };
 
@@ -1166,8 +1169,21 @@ export class AuthService {
     const toRows = (category: string, seeds: DropdownSeed[]): CategoryRow[] =>
       seeds.map(s => ({ ...s, category, organizationId }));
 
+    const sourceOptions: DropdownSeed[] = [
+      { value: 'cold_call',       label: 'Cold Call',        sortOrder: 0 },
+      { value: 'referral',        label: 'Referral',         sortOrder: 1 },
+      { value: 'website',         label: 'Website',          sortOrder: 2 },
+      { value: 'email_campaign',  label: 'Email Campaign',   sortOrder: 3 },
+      { value: 'social_media',    label: 'Social Media',     sortOrder: 4 },
+      { value: 'exhibition',      label: 'Exhibition/Event', sortOrder: 5 },
+      { value: 'tender',          label: 'Tender',           sortOrder: 6 },
+      { value: 'repeat_business', label: 'Repeat Business',  sortOrder: 7 },
+      { value: 'other',           label: 'Other',            sortOrder: 8 },
+    ];
+
     const rows: CategoryRow[] = [
       ...toRows('urgency',             urgencyOptions),
+      ...toRows('source',              sourceOptions),
       ...toRows('project_risk_status', riskOptions),
       ...toRows('individual_type',     individualTypeOptions),
       ...toRows('meeting_type',        meetingTypeOptions),
@@ -1178,12 +1194,12 @@ export class AuthService {
       ...toRows('team_type',           pick(SECTOR_TEAM_TYPES,       DEFAULT_TEAM_TYPES)),
     ];
 
-    await this.database.dropdownOption.createMany({
+    const result = await this.database.dropdownOption.createMany({
       data: rows.map(r => ({
         category:       r.category,
         value:          r.value,
         label:          r.label,
-        metadata:       r.metadata ?? undefined,
+        ...(r.metadata !== undefined && { metadata: r.metadata }),
         sortOrder:      r.sortOrder,
         isSystem:       r.isSystem ?? false,
         isActive:       true,
@@ -1191,5 +1207,6 @@ export class AuthService {
       })),
       skipDuplicates: true,
     });
+    console.log(`[seedDefaultDropdownOptions] inserted ${result.count} / ${rows.length} rows for org=${organizationId}`);
   }
 }

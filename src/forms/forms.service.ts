@@ -4,7 +4,6 @@ import {
   BadRequestException,
   Logger,
 } from '@nestjs/common';
-import { LeadStage } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateLeadFormDto } from './dto/create-lead-form.dto';
@@ -193,7 +192,7 @@ export class FormsService {
           phone: phone || null,
           notes: notes || null,
           projectName: projectName || null,
-          stage: form.targetStage as LeadStage,
+          stage: form.targetStage,
           assignedToId: form.assignToUserId || null,
           source: 'Web Form',
           channel: 'Website',

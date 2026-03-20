@@ -23,14 +23,6 @@ enum OrgPlanStatus {
   expired
 }
 
-enum LeadStage {
-  New
-  Contacted
-  Quoted
-  Negotiation
-  Won
-  Lost
-}
 
 
 enum UserRole {
@@ -140,7 +132,7 @@ model Lead {
   email             String?
   phone             String?
   expectedValue     Decimal  @db.Decimal(12, 2)
-  stage             LeadStage
+  stage             String
   urgency           String
   source            String?
   channel           String?

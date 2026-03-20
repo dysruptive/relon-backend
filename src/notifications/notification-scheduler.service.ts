@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { LeadStage } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { NotificationsService } from './notifications.service';
 import { NotificationType } from './notification-types.constants';
@@ -136,7 +135,7 @@ export class NotificationSchedulerService {
 
   private async checkStaleLeads() {
     const staleThreshold = new Date(Date.now() - 14 * 86400000);
-    const closedStageNames: LeadStage[] = [LeadStage.Won, LeadStage.Lost];
+    const closedStageNames = ['Won', 'Lost'];
 
     const leads = await this.prisma.lead.findMany({
       where: {

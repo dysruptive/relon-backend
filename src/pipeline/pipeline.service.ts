@@ -1,5 +1,4 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { LeadStage } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { CreateStageDto } from './dto/create-stage.dto';
 import { UpdateStageDto } from './dto/update-stage.dto';
@@ -83,7 +82,7 @@ export class PipelineService {
       }
     } else {
       const count = await this.prisma.lead.count({
-        where: { stage: stage.name as LeadStage, ...(organizationId ? { organizationId } : {}) },
+        where: { stage: stage.name, ...(organizationId ? { organizationId } : {}) },
       });
       if (count > 0) {
         throw new BadRequestException(

@@ -19,7 +19,6 @@ import { LeadsAiService } from './leads-ai.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Permissions } from '../permissions/permissions.decorator';
 import { IsArray, IsString, IsOptional, IsObject } from 'class-validator';
-import { LeadStage } from '@prisma/client';
 
 class BulkUpdateLeadsDto {
   @IsArray()
@@ -27,7 +26,7 @@ class BulkUpdateLeadsDto {
   ids: string[];
 
   @IsObject()
-  data: { stage?: LeadStage; assignedToId?: string; urgency?: string };
+  data: { stage?: string; assignedToId?: string; urgency?: string };
 }
 
 class BulkDeleteLeadsDto {
